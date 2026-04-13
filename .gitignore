@@ -1,0 +1,41 @@
+# 依赖目录
+node_modules/
+.dart_tool/
+
+# 构建产物
+dist/
+build/
+*.so
+*.dylib
+*.dll
+
+# IDE 和编辑器
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Agent 状态文件（所有子目录中的 .omc/state）
+**/.omc/state/
+
+# kveil 加密密钥（不提交加密的密钥文件）
+**/.kveil/secrets.bin
+
+# 日志文件
+*.log
+npm-debug.log*
+
+# 环境变量
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# 临时文件
+*.tmp
+*.temp
+
+# Claude 本地配置
+.claude/

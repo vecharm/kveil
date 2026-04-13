@@ -1,0 +1,247 @@
+{
+  "project": "secret-shield",
+  "description": "防 AI 密钥窃取工具 - 将密钥加密存储在二进制文件中，防止 AI 爬虫读取",
+  "stories": [
+    {
+      "id": "US-001",
+      "name": "CLI 项目初始化",
+      "description": "创建 CLI 工具的基础结构和 package.json",
+      "priority": 1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "packages/cli/package.json 存在且配置正确",
+        "packages/cli/bin/xxxx 可执行文件存在",
+        "运行 xxxx --version 输出版本号",
+        "packages/cli/src 目录结构创建完成"
+      ]
+    },
+    {
+      "id": "US-002",
+      "name": "CLI 核心模块 - crypto.js",
+      "description": "实现 AES-256-GCM 加密/解密和 XOR 编码",
+      "priority": 1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "encrypt(masterKey, plaintext) 返回加密的 hex 字符串",
+        "decrypt(masterKey, encrypted) 返回明文",
+        "xorEncode(key, mask) 返回 XOR 编码的字节数组",
+        "deriveKey(masterKey) 返回 SHA256 哈希作为 AES 密钥"
+      ]
+    },
+    {
+      "id": "US-003",
+      "name": "CLI 核心模块 - bin-format.js",
+      "description": "实现 bin 文件的读写逻辑",
+      "priority": 1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "readBinFile(path) 返回 { masterKey, entries }",
+        "writeBinFile(path, masterKey, entries) 写入 bin 文件",
+        "bin 文件头部 32 字节：16 字节主密钥 (XOR) + 16 字节校验值",
+        "校验值验证通过/失败正确判断"
+      ]
+    },
+    {
+      "id": "US-004",
+      "name": "CLI 核心模块 - config.js",
+      "description": "实现 yaml 配置文件的读写",
+      "priority": 1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "readConfig(path) 返回 yaml 解析后的对象",
+        "writeConfig(path, config) 写入 yaml 文件",
+        "config.yaml 包含 keys 数组，每项有 name 和 required 字段"
+      ]
+    },
+    {
+      "id": "US-005",
+      "name": "CLI 命令 - init",
+      "description": "实现 xxxx init 命令",
+      "priority": 2,
+      "passes": false,
+      "acceptanceCriteria": [
+        "运行 xxxx init 创建.xxxxx 目录",
+        "生成 config.yaml 包含空的 keys 数组",
+        "生成 secrets.bin 包含随机 16 位主密钥",
+        "输出成功消息"
+      ]
+    },
+    {
+      "id": "US-006",
+      "name": "CLI 命令 - add",
+      "description": "实现 xxxx add <name> <value> 命令",
+      "priority": 2,
+      "passes": false,
+      "acceptanceCriteria": [
+        "运行 xxxx add mi_api_key sk-123 加密并存储密钥",
+        "config.yaml 添加 mi_api_key 声明",
+        "secrets.bin 添加加密的密钥值",
+        "输出成功消息"
+      ]
+    },
+    {
+      "id": "US-007",
+      "name": "CLI 命令 - list",
+      "description": "实现 xxxx list 命令",
+      "priority": 2,
+      "passes": false,
+      "acceptanceCriteria": [
+        "运行 xxxx list 显示所有已配置的密钥名",
+        "输出格式清晰易读",
+        "不显示密钥的真实值"
+      ]
+    },
+    {
+      "id": "US-008",
+      "name": "CLI 命令 - check",
+      "description": "实现 xxxx check 命令",
+      "priority": 2,
+      "passes": false,
+      "acceptanceCriteria": [
+        "运行 xxxx check 比对 yaml 声明和 bin 数据",
+        "检测出 yaml 声明但 bin 缺失的密钥",
+        "检测出 bin 存在但 yaml 未声明的密钥",
+        "输出校验结果"
+      ]
+    },
+    {
+      "id": "US-009",
+      "name": "CLI 命令 - get",
+      "description": "实现 xxxx get <name> 命令",
+      "priority": 2,
+      "passes": false,
+      "acceptanceCriteria": [
+        "运行 xxxx get mi_api_key 输出解密的明文",
+        "密钥不存在时输出错误提示",
+        "用于调试目的"
+      ]
+    },
+    {
+      "id": "US-010",
+      "name": "Flutter 运行时库 - 项目结构",
+      "description": "创建 Flutter 包的基础结构",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "packages/flutter/pubspec.yaml 存在",
+        "packages/flutter/lib/secret_shield.dart 存在",
+        "packages/flutter/lib/bin_reader.dart 存在",
+        "packages/flutter/lib/crypto.dart 存在"
+      ]
+    },
+    {
+      "id": "US-011",
+      "name": "Flutter 运行时库 - bin_reader.dart",
+      "description": "实现 Flutter 读取 assets 中 bin 文件",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "readBinFileFromAssets() 正确读取 bin 文件",
+        "解析头部 32 字节",
+        "解析密钥条目",
+        "返回 { masterKey, entries }"
+      ]
+    },
+    {
+      "id": "US-012",
+      "name": "Flutter 运行时库 - crypto.dart",
+      "description": "实现 Flutter AES 解密和 XOR 解码",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "xorDecode(encodedKey, mask) 返回主密钥",
+        "decrypt(masterKey, encrypted) 返回明文",
+        "verifyChecksum(masterKey, checksum) 验证校验值"
+      ]
+    },
+    {
+      "id": "US-013",
+      "name": "Flutter 运行时库 - API",
+      "description": "实现 Flutter 对外 API",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "SecretShield.init() 初始化并加载 bin 文件",
+        "SecretShield.get('key') 返回解密的明文",
+        "SecretShield.checkRequiredKeys() 检查必需密钥",
+        "缺少密钥时抛出明确的错误"
+      ]
+    },
+    {
+      "id": "US-014",
+      "name": "Web/React 运行时库 - 项目结构",
+      "description": "创建 Web/React TypeScript 包",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "packages/web/package.json 存在",
+        "packages/web/src/index.ts 存在",
+        "packages/web/src/bin-reader.ts 存在",
+        "packages/web/src/crypto.ts 存在"
+      ]
+    },
+    {
+      "id": "US-015",
+      "name": "Web/React 运行时库 - bin-reader.ts",
+      "description": "实现 Web 端通过 fetch 加载 bin 文件",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "loadBinFile(url) 通过 fetch 获取 bin 文件",
+        "返回 ArrayBuffer",
+        "处理加载错误"
+      ]
+    },
+    {
+      "id": "US-016",
+      "name": "Web/React 运行时库 - crypto.ts",
+      "description": "实现 Web 端 AES 解密和 XOR 解码",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "xorDecode(encodedKey, mask) 返回主密钥",
+        "decrypt(masterKey, encrypted) 返回明文",
+        "使用 Web Crypto API 或 crypto-js"
+      ]
+    },
+    {
+      "id": "US-017",
+      "name": "Web/React 运行时库 - API",
+      "description": "实现 Web 端对外 API",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "SecretShield.init(binUrl) 初始化并加载 bin 文件",
+        "SecretShield.get('key') 返回解密的明文",
+        "返回 Promise<string>",
+        "错误处理完善"
+      ]
+    },
+    {
+      "id": "US-018",
+      "name": "CLI 测试",
+      "description": "为 CLI 工具编写测试",
+      "priority": 4,
+      "passes": false,
+      "acceptanceCriteria": [
+        "crypto.test.js 测试加密/解密",
+        "bin-format.test.js 测试 bin 文件读写",
+        "commands.test.js 测试 init/add/list/check/get 命令",
+        "所有测试通过"
+      ]
+    },
+    {
+      "id": "US-019",
+      "name": "文档",
+      "description": "编写 README 和使用文档",
+      "priority": 4,
+      "passes": false,
+      "acceptanceCriteria": [
+        "README.md 包含安装说明",
+        "README.md 包含使用示例",
+        "Flutter 集成文档",
+        "Web/React 集成文档"
+      ]
+    }
+  ]
+}

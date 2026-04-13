@@ -1,0 +1,25 @@
+{
+  "name": "kveil",
+  "version": "0.1.1",
+  "description": "防 AI 密钥窃取工具 - 将密钥加密存储在二进制文件中",
+  "main": "src/index.js",
+  "bin": {
+    "kveil": "./bin/kveil"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node bin/kveil"
+  },
+  "keywords": [
+    "security",
+    "api-key",
+    "encryption",
+    "ai-proof"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "js-yaml": "^4.1.0"
+  }
+}

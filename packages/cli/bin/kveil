@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+const { program } = require('commander');
+const { initCommand } = require('../src/commands/init');
+const { addCommand } = require('../src/commands/add');
+const { listCommand } = require('../src/commands/list');
+const { checkCommand } = require('../src/commands/check');
+const { getCommand } = require('../src/commands/get');
+const { showCommand, showListCommand } = require('../src/commands/show');
+
+const pkg = require('../package.json');
+
+program
+  .name('kveil')
+  .description('防 AI 密钥窃取工具 - 将密钥加密存储在二进制文件中')
+  .version(pkg.version);
+
+// kveil init
+program
+  .command('init')
+  .description('初始化项目，生成 16 位主密钥和配置文件')
+  .option('-k, --key <key>', '指定 16 位主密钥 (可选，不指定则自动生成)')
+  .action(initCommand);
+
+// kveil add <name> <value>
+program
+  .command('add <name> <value>')
+  .description('添加密钥')
+  .action(addCommand);
+
+// kveil list
+program
+  .command('list')
+  .description('列出所有已配置的密钥名')
+  .action(listCommand);
+
+// kveil check
+program
+  .command('check')
+  .description('检查配置文件完整性')
+  .action(checkCommand);
+
+// kveil get <name>
+program
+  .command('get <name>')
+  .description('获取解密的密钥值 (调试用)')
+  .action(getCommand);
+
+// kveil show <name> - 显示指定密钥的明文
+// kveil show -l - 列出所有密钥信息
+program
+  .command('show [name]')
+  .description('显示密钥信息：show <name> 查看明文，show -l 列出所有密钥')
+  .option('-l, --list', '列出所有密钥信息')
+  .action((name, options) => {
+    if (options.list) {
+      showListCommand();
+    } else if (name) {
+      showCommand(name);
+    } else {
+      console.error('❌ 错误：请指定密钥名或使用 -l 列出所有密钥');
+      console.error('用法：kveil show <密钥名>  或  kveil show -l');
+      process.exit(1);
+    }
+  });
+
+program.parse();

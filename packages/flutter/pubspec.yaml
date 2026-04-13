@@ -1,0 +1,19 @@
+name: kveil
+version: 0.1.0
+description: 防 AI 密钥窃取工具 - Flutter 运行时库
+homepage: https://github.com/vecharm/kveil
+repository: https://github.com/vecharm/kveil
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  crypto: ^3.0.3
+  pointycastle: ^3.7.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

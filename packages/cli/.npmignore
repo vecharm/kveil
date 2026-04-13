@@ -1,0 +1,6 @@
+node_modules
+test
+.kveil
+.omc
+*.log
+.DS_Store

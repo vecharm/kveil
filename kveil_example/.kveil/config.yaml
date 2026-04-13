@@ -1,0 +1,3 @@
+keys:
+  - name: mi_api_key
+    required: true

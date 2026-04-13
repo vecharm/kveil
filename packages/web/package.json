@@ -1,0 +1,31 @@
+{
+  "name": "kveil-web",
+  "version": "0.1.1",
+  "description": "防 AI 密钥窃取工具 - Web/React 运行时库",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "node test/web.test.js"
+  },
+  "keywords": [
+    "security",
+    "api-key",
+    "encryption",
+    "ai-proof",
+    "react",
+    "web"
+  ],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}

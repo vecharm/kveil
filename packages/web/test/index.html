@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kveil Web 测试</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    .result {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    .success { color: #22c55e; }
+    .error { color: #ef4444; }
+    button {
+      margin: 8px 4px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      background: #7c3aed;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { background: #6d28d9; }
+  </style>
+</head>
+<body>
+  <h1>🔐 Kveil Web/React 运行时库测试</h1>
+
+  <div>
+    <button onclick="testInit()">1. 初始化 Kveil</button>
+    <button onclick="testGetKey()">2. 获取 mi_api_key</button>
+    <button onclick="testGetKeys()">3. 获取所有密钥</button>
+    <button onclick="testCheckRequired()">4. 检查必需密钥</button>
+  </div>
+
+  <div id="result" class="result">
+    点击按钮开始测试...
+  </div>
+
+  <script type="module">
+    import { Kveil } from '../dist/index.js';
+
+    window.Kveil = Kveil;
+
+    window.testInit = async () => {
+      const result = document.getElementById('result');
+      try {
+        await Kveil.init('/.kveil/secrets.bin');
+        result.innerHTML = '<span class="success">✅ Kveil 初始化成功</span>';
+      } catch (e) {
+        result.innerHTML = `<span class="error">❌ Kveil 初始化失败：${e.message}</span>`;
+      }
+    };
+
+    window.getKey = async () => {
+      const result = document.getElementById('result');
+      try {
+        const key = Kveil.get('mi_api_key');
+        result.innerHTML = `<span class="success">✅ mi_api_key: ${key}</span>`;
+      } catch (e) {
+        result.innerHTML = `<span class="error">❌ 获取失败：${e.message}</span>`;
+      }
+    };
+
+    window.testGetKey = window.getKey;
+
+    window.testGetKeys = () => {
+      const result = document.getElementById('result');
+      try {
+        const keys = Kveil.getKeys();
+        result.innerHTML = `<span class="success">✅ 已加载密钥：${keys.join(', ')}</span>`;
+      } catch (e) {
+        result.innerHTML = `<span class="error">❌ 获取密钥列表失败：${e.message}</span>`;
+      }
+    };
+
+    window.testCheckRequired = () => {
+      const result = document.getElementById('result');
+      try {
+        Kveil.checkRequiredKeys(['mi_api_key']);
+        result.innerHTML = '<span class="success">✅ 必需密钥检查通过</span>';
+      } catch (e) {
+        result.innerHTML = `<span class="error">❌ 必需密钥检查失败：${e.message}</span>`;
+      }
+    };
+  </script>
+</body>
+</html>
