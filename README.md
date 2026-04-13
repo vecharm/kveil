@@ -92,8 +92,7 @@ kveil show mi_api_key
 
 ```yaml
 dependencies:
-  kveil:
-    path: path/to/kveil/packages/flutter
+   kveil: ^0.1.0
 ```
 
 ### 2. 配置 assets
