@@ -44,3 +44,6 @@ npm-debug.log*
 
 # Claude 本地配置
 .claude/
+
+# Qwen 配置
+.qwen/

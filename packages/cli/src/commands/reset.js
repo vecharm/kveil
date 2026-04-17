@@ -1,12 +1,12 @@
 const path = require('path');
-const { rotateKeyInBin, readBinFile } = require('../bin-format');
+const { resetKeyInBin, readBinFile } = require('../bin-format');
 const { DEFAULT_CONFIG_DIR } = require('./init');
 
 /**
- * kveil rotate <name> <newValue> 命令
- * 更换密钥（更新密钥值）
+ * kveil reset <name> <newValue> 命令
+ * 重置密钥（更新密钥值）
  */
-function rotateCommand(name, newValue, options = {}) {
+function resetCommand(name, newValue, options = {}) {
   const cwd = process.cwd();
   const configDir = path.join(cwd, DEFAULT_CONFIG_DIR);
   const binPath = path.join(configDir, 'secrets.bin');
@@ -21,23 +21,23 @@ function rotateCommand(name, newValue, options = {}) {
     // 检查密钥是否存在
     const { entries } = readBinFile(binPath);
     const existsInBin = entries.some(e => e.name === name);
-    
+
     if (!existsInBin) {
       console.error(`❌ 密钥"${name}"不存在，请先使用 kveil add ${name} <value> 添加`);
       process.exit(1);
     }
 
     // 更新密钥值
-    rotateKeyInBin(binPath, name, newValue);
-    console.log(`✅ 已更新密钥：${name}`);
+    resetKeyInBin(binPath, name, newValue);
+    console.log(`✅ 已重置密钥：${name}`);
 
     console.log('');
     console.log('下一步:');
-    console.log('   kveil get ${name}              # 验证新密钥值');
-    console.log('   kveil rotate ${name} <新值>    # 再次更换密钥');
+    console.log('   kveil get ${name}           # 验证新密钥值');
+    console.log('   kveil reset ${name} <新值>  # 再次重置密钥');
 
   } catch (error) {
-    console.error('❌ 更换失败:', error.message);
+    console.error('❌ 重置失败:', error.message);
     process.exit(1);
   }
 }
@@ -52,4 +52,4 @@ function pathExists(p) {
   }
 }
 
-module.exports = { rotateCommand };
+module.exports = { resetCommand };

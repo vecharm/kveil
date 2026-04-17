@@ -204,7 +204,7 @@ function removeKeyFromBin(filePath, name) {
  * @param {string} name - 密钥名
  * @param {string} newValue - 新的明文密钥值
  */
-function rotateKeyInBin(filePath, name, newValue) {
+function resetKeyInBin(filePath, name, newValue) {
   const { masterKey, entries } = readBinFile(filePath);
 
   // 检查是否存在
@@ -227,6 +227,6 @@ module.exports = {
   addKeyToBin,
   getKeyFromBin,
   removeKeyFromBin,
-  rotateKeyInBin,
+  resetKeyInBin,
   HEADER_SIZE
 };

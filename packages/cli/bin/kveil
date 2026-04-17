@@ -8,7 +8,7 @@ const { checkCommand } = require('../src/commands/check');
 const { getCommand } = require('../src/commands/get');
 const { showCommand, showListCommand } = require('../src/commands/show');
 const { removeCommand } = require('../src/commands/remove');
-const { rotateCommand } = require('../src/commands/rotate');
+const { resetCommand } = require('../src/commands/reset');
 
 const pkg = require('../package.json');
 
@@ -72,10 +72,10 @@ program
   .description('删除密钥')
   .action(removeCommand);
 
-// kveil rotate <name> <newValue>
+// kveil reset <name> <newValue>
 program
-  .command('rotate <name> <newValue>')
-  .description('更换密钥（更新密钥值）')
-  .action(rotateCommand);
+  .command('reset <name> <newValue>')
+  .description('重置密钥（更新密钥值）')
+  .action(resetCommand);
 
 program.parse();
