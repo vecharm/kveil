@@ -303,6 +303,67 @@ test('CLI 工具测试', async (t) => {
     assert(result.includes('missing_key'), '应该提示缺失的密钥');
     cleanup();
   });
+
+  await t.test('add 空值应该允许', () => {
+    setup();
+    runCli('init');
+
+    const output = runCli('add empty_key ""');
+
+    // 空值应该允许添加（某些场景可能需要空值）
+    assert(output.includes('✅ 已添加密钥'), '应该允许添加空值');
+    cleanup();
+  });
+
+  await t.test('add 重复密钥应该覆盖', () => {
+    setup();
+    runCli('init');
+    runCli('add key1 "old_value"');
+
+    const output = runCli('add key1 "new_value"');
+
+    assert(output.includes('✅ 已添加密钥'), '应该覆盖已有密钥');
+    
+    const getOutput = runCli('get key1');
+    assert(getOutput.includes('new_value'), '应该是新值');
+    cleanup();
+  });
+
+  await t.test('list 空列表应该显示提示', () => {
+    setup();
+    runCli('init');
+
+    const output = runCli('list');
+
+    // 输出包含"暂无已配置的密钥"
+    assert(output.includes('暂无') || output.includes('0 个'), '应该显示空列表提示');
+    cleanup();
+  });
+
+  await t.test('加密解密应该正确处理中文', () => {
+    setup();
+    runCli('init');
+    runCli('add chinese_key "中文密钥值 🔐"');
+
+    const output = runCli('get chinese_key');
+
+    // 输出应该包含中文字符
+    assert(output.length > 0 && output.includes('中文'), '应该正确解密中文');
+    cleanup();
+  });
+
+  await t.test('加密解密应该正确处理超长密钥', () => {
+    setup();
+    runCli('init');
+    
+    const longValue = 'a'.repeat(1000);
+    runCli(`add long_key "${longValue}"`);
+
+    const output = runCli('get long_key');
+
+    assert(output.includes(longValue), '应该正确解密超长密钥');
+    cleanup();
+  });
 });
 
 console.log('所有测试通过！');
