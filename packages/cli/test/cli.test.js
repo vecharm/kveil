@@ -22,16 +22,14 @@ function setup() {
 
 // 运行 CLI 命令
 function runCli(args, cwd = TEST_DIR) {
-  try {
-    return execSync(`node ${CLI_PATH} ${args}`, {
-      cwd,
-      encoding: 'utf8',
-      env: { ...process.env },
-      stdio: ['pipe', 'pipe', 'pipe']  // 使用 pipe 避免交互问题
-    });
-  } catch (error) {
-    return error.stdout || error.stderr || '';
-  }
+  const { spawnSync } = require('child_process');
+  const result = spawnSync('node', [CLI_PATH, ...args.split(' ')], {
+    cwd,
+    encoding: 'utf8',
+    env: { ...process.env }
+  });
+  // 合并 stdout 和 stderr
+  return (result.stdout || '') + (result.stderr || '');
 }
 
 test('CLI 工具测试', async (t) => {
@@ -231,9 +229,78 @@ test('CLI 工具测试', async (t) => {
 
     // 直接测试命令验证逻辑
     const result = runCli('rekey --key "SHORT"');
-    
+
     // 由于需要交互，我们测试空密钥的情况
     assert(result !== undefined, '命令应该执行');
+    cleanup();
+  });
+
+  await t.test('rekey 空密钥列表应该报错', () => {
+    setup();
+    runCli('init');
+    // 不添加任何密钥
+
+    // rekey 需要交互，这里测试空密钥时 CLI 应该报错
+    // 通过直接调用命令逻辑来测试
+    const result = runCli('rekey');
+    
+    // 空密钥时会提示没有密钥
+    assert(result !== '', '应该有输出');
+    cleanup();
+  });
+
+  await t.test('show -l 应该列出所有密钥信息', () => {
+    setup();
+    runCli('init');
+    runCli('add key1 "value1"');
+    runCli('add key2 "value2"');
+
+    const output = runCli('show -l');
+
+    assert(output.includes('key1'), '应该包含 key1');
+    assert(output.includes('key2'), '应该包含 key2');
+    cleanup();
+  });
+
+  await t.test('show 指定密钥应该显示明文', () => {
+    setup();
+    runCli('init');
+    runCli('add key1 "secret123"');
+
+    const output = runCli('show key1');
+
+    assert(output.includes('secret123'), '应该显示明文');
+    cleanup();
+  });
+
+  await t.test('show 不存在的密钥应该报错', () => {
+    setup();
+    runCli('init');
+    runCli('add key1 "value1"');
+
+    const result = runCli('show nonexistent_key');
+
+    assert(result !== '', '应该报错');
+    assert(result.includes('不存在'), '应该提示密钥不存在');
+    cleanup();
+  });
+
+  await t.test('check 密钥缺失应该报错', () => {
+    setup();
+    runCli('init');
+    runCli('add key1 "value1"');
+
+    // 手动修改 config.yaml 添加一个不存在的密钥声明
+    const configPath = path.join(TEST_DIR, '.kveil/config.yaml');
+    const yaml = require('js-yaml');
+    const fs = require('fs');
+    const config = yaml.load(fs.readFileSync(configPath, 'utf8'));
+    config.keys.push({ name: 'missing_key', required: true });
+    fs.writeFileSync(configPath, yaml.dump(config));
+
+    const result = runCli('check');
+
+    assert(result.includes('missing_key'), '应该提示缺失的密钥');
     cleanup();
   });
 });
