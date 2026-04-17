@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+- Update documentation with new CLI commands (remove, reset, rekey)
+- Compatible with kveil CLI v0.2.0
+- No breaking changes in API
+
 ## 0.1.0
 
 - Initial release
