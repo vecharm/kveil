@@ -1,6 +1,6 @@
 {
   "name": "kveil-web",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "防 AI 密钥窃取工具 - Web/React 运行时库",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

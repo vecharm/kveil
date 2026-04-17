@@ -104,6 +104,17 @@ kveil init
 
 # 添加密钥
 kveil add mi_api_key "sk-1234567890abcdef"
+
+# 查看密钥列表
+kveil list
+
+# 查看密钥信息
+kveil show -l
+
+# 密钥管理
+kveil remove mi_api_key
+kveil reset mi_api_key "new-sk-0987654321fedcba"
+kveil rekey --key "ABCDEFGHIJ123456"
 ```
 
 ## 完整文档

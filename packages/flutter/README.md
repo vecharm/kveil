@@ -73,6 +73,22 @@ kveil show -l
 kveil show mi_api_key
 ```
 
+### 密钥管理
+
+```bash
+# 删除密钥
+kveil remove mi_api_key
+
+# 重置密钥值（更新密钥）
+kveil reset mi_api_key "new-sk-0987654321fedcba"
+
+# 更换主密钥（重新加密所有密钥）
+kveil rekey
+
+# 指定新主密钥（必须 16 位）
+kveil rekey --key "ABCDEFGHIJ123456"
+```
+
 示例输出：
 ```
 📦 Kveil 密钥信息：
