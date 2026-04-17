@@ -7,6 +7,8 @@ const { listCommand } = require('../src/commands/list');
 const { checkCommand } = require('../src/commands/check');
 const { getCommand } = require('../src/commands/get');
 const { showCommand, showListCommand } = require('../src/commands/show');
+const { removeCommand } = require('../src/commands/remove');
+const { rotateCommand } = require('../src/commands/rotate');
 
 const pkg = require('../package.json');
 
@@ -63,5 +65,17 @@ program
       process.exit(1);
     }
   });
+
+// kveil remove <name>
+program
+  .command('remove <name>')
+  .description('删除密钥')
+  .action(removeCommand);
+
+// kveil rotate <name> <newValue>
+program
+  .command('rotate <name> <newValue>')
+  .description('更换密钥（更新密钥值）')
+  .action(rotateCommand);
 
 program.parse();

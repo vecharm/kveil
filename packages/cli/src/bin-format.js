@@ -178,11 +178,55 @@ function getKeyFromBin(filePath, name) {
   return decrypt(masterKey, entry.encrypted);
 }
 
+/**
+ * 从 bin 文件删除密钥
+ * @param {string} filePath - bin 文件路径
+ * @param {string} name - 密钥名
+ */
+function removeKeyFromBin(filePath, name) {
+  const { masterKey, entries } = readBinFile(filePath);
+
+  // 检查是否存在
+  const existingIndex = entries.findIndex(e => e.name === name);
+  if (existingIndex < 0) {
+    throw new Error(`密钥"${name}"不存在`);
+  }
+
+  // 删除密钥
+  entries.splice(existingIndex, 1);
+
+  writeBinFile(filePath, masterKey, entries);
+}
+
+/**
+ * 更换密钥（更新密钥值）
+ * @param {string} filePath - bin 文件路径
+ * @param {string} name - 密钥名
+ * @param {string} newValue - 新的明文密钥值
+ */
+function rotateKeyInBin(filePath, name, newValue) {
+  const { masterKey, entries } = readBinFile(filePath);
+
+  // 检查是否存在
+  const existingIndex = entries.findIndex(e => e.name === name);
+  if (existingIndex < 0) {
+    throw new Error(`密钥"${name}"不存在`);
+  }
+
+  // 更新加密值
+  const encrypted = encrypt(masterKey, newValue);
+  entries[existingIndex] = { name, encrypted };
+
+  writeBinFile(filePath, masterKey, entries);
+}
+
 module.exports = {
   readBinFile,
   writeBinFile,
   initBinFile,
   addKeyToBin,
   getKeyFromBin,
+  removeKeyFromBin,
+  rotateKeyInBin,
   HEADER_SIZE
 };

@@ -102,6 +102,22 @@ function getAllDeclaredKeys(filePath) {
   return config.keys.map(k => k.name);
 }
 
+/**
+ * 从配置文件中删除密钥声明
+ * @param {string} filePath - yaml 文件路径
+ * @param {string} name - 密钥名
+ */
+function removeKeyFromConfig(filePath, name) {
+  const config = readConfig(filePath);
+
+  const existingIndex = config.keys.findIndex(k => k.name === name);
+
+  if (existingIndex >= 0) {
+    config.keys.splice(existingIndex, 1);
+    writeConfig(filePath, config);
+  }
+}
+
 module.exports = {
   readConfig,
   writeConfig,
@@ -109,5 +125,6 @@ module.exports = {
   addKeyToConfig,
   hasKeyInConfig,
   getRequiredKeys,
-  getAllDeclaredKeys
+  getAllDeclaredKeys,
+  removeKeyFromConfig
 };

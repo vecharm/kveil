@@ -19,6 +19,11 @@ build/
 # Agent 状态文件（所有子目录中的 .omc/state）
 **/.omc/state/
 
+# .omc 其他文件（保留 prd.json）
+.omc/project-memory.json
+.omc/sessions/
+.omc/state/
+
 # kveil 加密密钥（不提交加密的密钥文件）
 **/.kveil/secrets.bin
 
