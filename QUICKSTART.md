@@ -149,8 +149,11 @@ Kveil.checkRequiredKeys(['mi_api_key', 'stripe_key']);
 **Q: 密钥丢失了怎么办？**  
 A: 重新运行 `kveil add <name> <value>` 添加即可。
 
-**Q: 可以更换主密钥吗？**  
-A: 运行 `kveil init -k <新密钥>` 会覆盖现有主密钥，需要重新添加所有密钥。
+**Q: 可以更换主密钥吗？**
+A: 可以！运行 `kveil rekey` 自动生成新主密钥，或用 `kveil rekey --key "新密钥"` 指定新主密钥。
+
+**Q: 如何删除或更新单个密钥？**
+A: 使用 `kveil remove <密钥名>` 删除密钥，或用 `kveil reset <密钥名> <新值>` 更新密钥值。
 
 **Q: bin 文件可以提交到 Git 吗？**  
 A: 可以，密钥已加密存储。但建议不要提交到公共仓库。

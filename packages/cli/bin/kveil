@@ -9,6 +9,7 @@ const { getCommand } = require('../src/commands/get');
 const { showCommand, showListCommand } = require('../src/commands/show');
 const { removeCommand } = require('../src/commands/remove');
 const { resetCommand } = require('../src/commands/reset');
+const { rekeyCommand } = require('../src/commands/rekey');
 
 const pkg = require('../package.json');
 
@@ -77,5 +78,18 @@ program
   .command('reset <name> <newValue>')
   .description('重置密钥（更新密钥值）')
   .action(resetCommand);
+
+// kveil rekey
+program
+  .command('rekey')
+  .description('更换主密钥，并用新主密钥重新加密所有存储的密钥')
+  .option('-k, --key <key>', '指定新的 16 位主密钥 (可选，不指定则自动生成)')
+  .action(async (options) => {
+    try {
+      await rekeyCommand(options);
+    } catch (error) {
+      // 错误已在命令内部处理
+    }
+  });
 
 program.parse();

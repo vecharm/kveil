@@ -43,6 +43,44 @@ kveil check
 kveil list
 ```
 
+## 密钥管理
+
+### 删除密钥
+
+```bash
+kveil remove mi_api_key
+```
+
+从 `secrets.bin` 和 `config.yaml` 中删除指定密钥。
+
+### 重置单个密钥值
+
+```bash
+kveil reset mi_api_key "new-sk-0987654321fedcba"
+```
+
+更新指定密钥的值（使用相同的主密钥重新加密）。
+
+### 更换主密钥
+
+```bash
+# 自动生成新主密钥
+kveil rekey
+
+# 指定新主密钥（必须 16 位）
+kveil rekey --key "ABCDEFGHIJ123456"
+```
+
+**使用场景：**
+- 主密钥可能泄露时
+- 定期轮换密钥以提高安全性
+- 团队成员变更后的安全加固
+
+**注意事项：**
+- 旧主密钥将失效
+- 所有使用旧主密钥的运行时库需要同步更新
+- 新主密钥需要安全分发给团队成员
+
 ## 运行时库集成
 
 ### Flutter

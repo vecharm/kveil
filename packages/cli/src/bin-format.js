@@ -220,6 +220,54 @@ function resetKeyInBin(filePath, name, newValue) {
   writeBinFile(filePath, masterKey, entries);
 }
 
+/**
+ * 更换主密钥，并用新主密钥重新加密所有密钥
+ * @param {string} filePath - bin 文件路径
+ * @param {string} newMasterKey - 新的 16 位主密钥
+ * @returns {string} 新主密钥
+ */
+function rekeyBinFile(filePath, newMasterKey) {
+  const { masterKey: oldMasterKey, entries } = readBinFile(filePath);
+
+  // 用旧主密钥解密所有密钥，然后用新主密钥重新加密
+  const newEntries = [];
+  for (const entry of entries) {
+    // 用旧主密钥解密
+    const plaintext = decrypt(oldMasterKey, entry.encrypted);
+    // 用新主密钥重新加密
+    const reencrypted = encrypt(newMasterKey, plaintext);
+    newEntries.push({ name: entry.name, encrypted: reencrypted });
+  }
+
+  // 写入新主密钥和重新加密的条目
+  writeBinFile(filePath, newMasterKey, newEntries);
+
+  return newMasterKey;
+}
+
+/**
+ * 更换主密钥（带备份机制）
+ * @param {string} filePath - bin 文件路径
+ * @param {string} newMasterKey - 新的 16 位主密钥
+ * @returns {string} 备份文件路径
+ */
+function rekeyBinFileWithBackup(filePath, newMasterKey) {
+  // 创建备份
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+  const backupPath = `${filePath}.backup.${timestamp}`;
+  fs.copyFileSync(filePath, backupPath);
+
+  try {
+    rekeyBinFile(filePath, newMasterKey);
+    return backupPath;
+  } catch (error) {
+    // 如果 rekey 失败，恢复备份
+    console.error('⚠️  rekey 失败，正在恢复备份...');
+    fs.copyFileSync(backupPath, filePath);
+    throw error;
+  }
+}
+
 module.exports = {
   readBinFile,
   writeBinFile,
@@ -228,5 +276,7 @@ module.exports = {
   getKeyFromBin,
   removeKeyFromBin,
   resetKeyInBin,
+  rekeyBinFile,
+  rekeyBinFileWithBackup,
   HEADER_SIZE
 };
