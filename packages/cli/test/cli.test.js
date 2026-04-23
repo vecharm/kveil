@@ -36,7 +36,7 @@ test('CLI 工具测试', async (t) => {
   await t.test('--version 应该输出版本号', () => {
     setup();
     const output = runCli('--version');
-    assert(output.includes('0.1.1'), '应该输出版本号 0.1.1');
+    assert(output.includes('0.2.0'), '应该输出版本号 0.2.0');
     cleanup();
   });
 

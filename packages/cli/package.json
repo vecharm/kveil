@@ -8,7 +8,10 @@
   },
   "scripts": {
     "test": "node --test",
-    "start": "node bin/kveil"
+    "start": "node bin/kveil",
+    "build": "node scripts/build.js",
+    "build:dry": "node scripts/build.js --dry",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "security",
@@ -21,5 +24,8 @@
   "dependencies": {
     "commander": "^11.0.0",
     "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^5.4.1"
   }
 }
