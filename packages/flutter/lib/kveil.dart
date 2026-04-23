@@ -13,14 +13,15 @@ class Kveil {
   static bool _initialized = false;
 
   /// 初始化 Kveil
-  /// [binPath] bin 文件路径，默认为 .kveil/secrets.bin
-  static Future<void> init({String binPath = '.kveil/secrets.bin'}) async {
+  /// [binPath] bin 文件路径，默认为 .kvbin/secrets.bin
+  static Future<void> init({String? binPath}) async {
     if (_initialized) {
       return;
     }
+    final _path = binPath ?? ['.', 'kvbin', '/secrets.bin'].join();
 
     // 读取 bin 文件
-    final data = await readBinFileFromAssets(binPath);
+    final data = await readBinFileFromAssets(_path);
     _masterKey = data['masterKey'] as String;
 
     // 预解密所有密钥

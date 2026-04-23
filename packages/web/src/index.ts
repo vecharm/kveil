@@ -3,7 +3,7 @@
  *
  * 使用方式:
  * ```typescript
- * await Kveil.init('/.kveil/secrets.bin');
+ * await Kveil.init('/.kvbin/secrets.bin');
  * const apiKey = await Kveil.get('mi_api_key');
  * ```
  */
@@ -17,14 +17,15 @@ class KveilClass {
 
   /**
    * 初始化 Kveil
-   * @param binUrl - bin 文件的 URL，默认为 /.kveil/secrets.bin
+   * @param binUrl - bin 文件的 URL，默认为 /.kvbin/secrets.bin
    */
-  async init(binUrl: string = '/.kveil/secrets.bin'): Promise<void> {
+  async init(binUrl?: string): Promise<void> {
     if (this._initialized) {
       return;
     }
+    const _url = binUrl ?? ['/', '.kvbin', '/secrets.bin'].join('');
 
-    const data: BinFileData = await loadBinFile(binUrl);
+    const data: BinFileData = await loadBinFile(_url);
 
     // 预解密所有密钥
     for (const entry of data.entries) {

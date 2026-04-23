@@ -12,10 +12,10 @@ npm install kveil-web
 
 ### 1. 配置 bin 文件
 
-将 `.kveil/secrets.bin` 文件拷贝到项目的 `public/` 目录：
+将 `.kvbin/secrets.bin` 文件拷贝到项目的 `public/` 目录：
 
 ```bash
-cp .kveil/secrets.bin public/.kveil/secrets.bin
+cp .kvbin/secrets.bin public/.kvbin/secrets.bin
 ```
 
 ### 2. 初始化
@@ -23,7 +23,7 @@ cp .kveil/secrets.bin public/.kveil/secrets.bin
 ```typescript
 import { Kveil } from 'kveil-web';
 
-await Kveil.init('/.kveil/secrets.bin');
+await Kveil.init('/.kvbin/secrets.bin');
 ```
 
 ### 3. 获取密钥
@@ -73,7 +73,7 @@ function MyApp() {
 
 初始化 Kveil，加载并解密 bin 文件中的密钥。
 
-- `binUrl` - bin 文件的 URL，默认为 `/.kveil/secrets.bin`
+- `binUrl` - bin 文件的 URL，默认为 `/.kvbin/secrets.bin`
 
 ### `Kveil.get(key: string): string`
 

@@ -17,8 +17,8 @@ kveil init
 ```
 
 生成：
-- `.kveil/secrets.bin` - 加密的密钥存储文件
-- `.kveil/config.yaml` - 密钥声明配置
+- `.kvbin/secrets.bin` - 加密的密钥存储文件
+- `.kvbin/config.yaml` - 密钥声明配置
 
 ### 2. 添加密钥
 
@@ -113,31 +113,15 @@ npm install kveil-web
 
 **配置** - 复制 bin 文件到 public 目录：
 ```bash
-cp .kveil/secrets.bin public/.kveil/secrets.bin
+cp .kvbin/secrets.bin public/.kvbin/secrets.bin
 ```
 
 **代码使用**
 ```typescript
 import { Kveil } from 'kveil-web';
 
-await Kveil.init('/.kveil/secrets.bin');
+await Kveil.init('/.kvbin/secrets.bin');
 const apiKey = Kveil.get('mi_api_key');
-```
-
-## bin 文件格式
-
-```
-┌─────────────────────────────────┐
-│ 头部 (32 字节)                   │
-│ [0-15]  16 位主密钥 (XOR 编码)    │
-│ [16-31] 校验值 (MD5 前 16 字节)   │
-├─────────────────────────────────┤
-│ 密钥条目 (变长，可重复)           │
-│ [2 字节] 密钥名长度 (N)          │
-│ [N 字节] 密钥名 (UTF-8)         │
-│ [2 字节] 加密值长度 (M)          │
-│ [M 字节] 加密值 (base64)        │
-└─────────────────────────────────┘
 ```
 
 ## 安全说明

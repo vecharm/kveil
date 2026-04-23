@@ -1,0 +1,5 @@
+keys:
+  - name: mi_api_key
+    required: true
+  - name: stripe_key
+    required: true

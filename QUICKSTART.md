@@ -18,8 +18,8 @@ kveil init
 ```
 
 生成文件：
-- `.kveil/secrets.bin` - 加密的密钥存储文件
-- `.kveil/config.yaml` - 密钥声明配置
+- `.kvbin/secrets.bin` - 加密的密钥存储文件
+- `.kvbin/config.yaml` - 密钥声明配置
 
 ## 2. 添加密钥
 
@@ -50,8 +50,8 @@ dependencies:
 
 flutter:
   assets:
-    - .kveil/secrets.bin
-    - .kveil/config.yaml
+    - .kvbin/secrets.bin
+    - .kvbin/config.yaml
 ```
 
 **代码使用**
@@ -78,14 +78,14 @@ npm install path/to/kveil/packages/web
 
 **配置** - 复制 bin 文件到 public 目录：
 ```bash
-cp .kveil/secrets.bin public/.kveil/secrets.bin
+cp .kvbin/secrets.bin public/.kvbin/secrets.bin
 ```
 
 **代码使用**
 ```typescript
 import { Kveil } from 'kveil-web';
 
-await Kveil.init('/.kveil/secrets.bin');
+await Kveil.init('/.kvbin/secrets.bin');
 const apiKey = Kveil.get('mi_api_key');
 ```
 
@@ -116,7 +116,7 @@ npm install path/to/kveil/packages/cli
 const { readBinFile } = require('@kveil/cli/src/bin-format');
 const { decrypt } = require('@kveil/cli/src/crypto');
 
-const { masterKey, entries } = readBinFile('.kveil/secrets.bin');
+const { masterKey, entries } = readBinFile('.kvbin/secrets.bin');
 const value = decrypt(masterKey, entries[0].encrypted);
 ```
 
@@ -138,10 +138,10 @@ Kveil.checkRequiredKeys(['mi_api_key', 'stripe_key']);
 
 ```gitignore
 # 保留 bin 文件（已加密）
-# .kveil/secrets.bin
+# .kvbin/secrets.bin
 
 # 但忽略 config.yaml 如果包含敏感信息
-.kveil/config.yaml
+.kvbin/config.yaml
 ```
 
 ## 常见问题
@@ -164,4 +164,4 @@ A: 推荐在 CI 环境中使用环境变量注入密钥，不使用 bin 文件�
 ## 下一步
 
 - 查看完整文档：[README.md](./README.md)
-- 了解 bin 文件格式和安全说明
+- 了解安全说明

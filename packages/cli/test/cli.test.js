@@ -40,15 +40,15 @@ test('CLI 工具测试', async (t) => {
     cleanup();
   });
 
-  await t.test('init 应该创建 .kveil 目录和配置文件', () => {
+  await t.test('init 应该创建 .kvbin 目录和配置文件', () => {
     setup();
     const output = runCli('init');
 
     assert(output.includes('✅ 已生成主密钥'), '应该生成主密钥');
     assert(output.includes('✅ 已创建配置文件'), '应该创建配置文件');
 
-    const binPath = path.join(TEST_DIR, '.kveil/secrets.bin');
-    const configPath = path.join(TEST_DIR, '.kveil/config.yaml');
+    const binPath = path.join(TEST_DIR, '.kvbin/secrets.bin');
+    const configPath = path.join(TEST_DIR, '.kvbin/config.yaml');
 
     assert(fs.existsSync(binPath), 'secrets.bin 应该存在');
     assert(fs.existsSync(configPath), 'config.yaml 应该存在');
@@ -208,7 +208,7 @@ test('CLI 工具测试', async (t) => {
 
     // 使用指定密钥 rekey（避免交互，使用 16 位密钥）
     const { rekeyBinFileWithBackup } = require('../src/bin-format');
-    const binPath = path.join(TEST_DIR, '.kveil/secrets.bin');
+    const binPath = path.join(TEST_DIR, '.kvbin/secrets.bin');
     const backupPath = rekeyBinFileWithBackup(binPath, 'NewMaster1234567');
 
     assert(fs.existsSync(backupPath), '应该创建备份文件');
@@ -291,7 +291,7 @@ test('CLI 工具测试', async (t) => {
     runCli('add key1 "value1"');
 
     // 手动修改 config.yaml 添加一个不存在的密钥声明
-    const configPath = path.join(TEST_DIR, '.kveil/config.yaml');
+    const configPath = path.join(TEST_DIR, '.kvbin/config.yaml');
     const yaml = require('js-yaml');
     const fs = require('fs');
     const config = yaml.load(fs.readFileSync(configPath, 'utf8'));
