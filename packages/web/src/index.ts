@@ -18,8 +18,9 @@ class KveilClass {
   /**
    * 初始化 Kveil
    * @param binUrl - bin 文件的 URL，默认为 /.kvbin/secrets.bin
+   * @param requiredKeys - 必需的密钥名列表，如果缺失则抛出异常
    */
-  async init(binUrl?: string): Promise<void> {
+  async init(binUrl?: string, requiredKeys?: string[]): Promise<void> {
     if (this._initialized) {
       return;
     }
@@ -31,6 +32,11 @@ class KveilClass {
     for (const entry of data.entries) {
       const plaintext = await decrypt(data.masterKey, entry.encrypted);
       this._cache.set(entry.name, plaintext);
+    }
+
+    // 检查必需的密钥
+    if (requiredKeys && requiredKeys.length > 0) {
+      this.checkRequiredKeys(requiredKeys);
     }
 
     this._initialized = true;

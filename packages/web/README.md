@@ -32,7 +32,7 @@ cp .kvbin/secrets.bin public/.kvbin/secrets.bin
 ```typescript
 import { Kveil } from 'kveil-web';
 
-await Kveil.init('/.kvbin/secrets.bin');
+await Kveil.init('/.kvbin/secrets.bin', ['mi_api_key', 'stripe_key']);
 ```
 
 ### 3. 获取密钥

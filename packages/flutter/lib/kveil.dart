@@ -14,7 +14,8 @@ class Kveil {
 
   /// 初始化 Kveil
   /// [binPath] bin 文件路径，默认为 .kvbin/secrets.bin
-  static Future<void> init({String? binPath}) async {
+  /// [requiredKeys] 必需的密钥名列表，如果缺失则抛出异常
+  static Future<void> init({String? binPath, List<String>? requiredKeys}) async {
     if (_initialized) {
       return;
     }
@@ -30,6 +31,11 @@ class Kveil {
       final name = entry['name'] as String;
       final encrypted = entry['encrypted'] as String;
       _cache[name] = decrypt(_masterKey!, encrypted);
+    }
+
+    // 检查必需的密钥
+    if (requiredKeys != null && requiredKeys.isNotEmpty) {
+      checkRequiredKeys(requiredKeys);
     }
 
     _initialized = true;

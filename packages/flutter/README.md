@@ -138,8 +138,10 @@ import 'package:kveil/kveil.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 初始化
-  await Kveil.init();
+  // 初始化并检查必需密钥
+  await Kveil.init(
+    requiredKeys: ['mi_api_key', 'stripe_key'],
+  );
 
   // 获取密钥
   final apiKey = Kveil.get('mi_api_key');
