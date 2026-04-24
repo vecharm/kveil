@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+- Auto-check required keys from config file during init
+- Throw error if config file is missing or invalid (no longer silent skip)
+- Obfuscate file paths using CharCodes to prevent AI recognition
+- Improve test coverage to 100%
+
 ## 0.3.0 (Breaking Change)
 
 ### ⚠️ BREAKING CHANGES
