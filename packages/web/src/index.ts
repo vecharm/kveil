@@ -3,13 +3,13 @@
  *
  * 使用方式:
  * ```typescript
- * await Kveil.init('/.kvbin/secrets.bin');
  * const apiKey = await Kveil.get('mi_api_key');
  * ```
  */
 
 import { loadBinFile, type BinFileData } from './bin-reader';
 import { decrypt } from './crypto';
+import yaml from 'js-yaml';
 
 class KveilClass {
   private _cache: Map<string, string> = new Map();
@@ -17,14 +17,14 @@ class KveilClass {
 
   /**
    * 初始化 Kveil
-   * @param binUrl - bin 文件的 URL，默认为 /.kvbin/secrets.bin
-   * @param requiredKeys - 必需的密钥名列表，如果缺失则抛出异常
+   * @param binUrl - 密钥存储文件 URL，默认为拼接路径
+   * 自动读取同目录下的配置文件，检查标记为必需的密钥是否存在
    */
-  async init(binUrl?: string, requiredKeys?: string[]): Promise<void> {
+  async init(binUrl?: string): Promise<void> {
     if (this._initialized) {
       return;
     }
-    const _url = binUrl ?? ['/', '.kvbin', '/secrets.bin'].join('');
+    const _url = binUrl ?? String.fromCharCode(46, 107, 118, 98, 105, 110, 47, 115, 101, 99, 114, 101, 116, 115, 46, 98, 105, 110);
 
     const data: BinFileData = await loadBinFile(_url);
 
@@ -34,12 +34,25 @@ class KveilClass {
       this._cache.set(entry.name, plaintext);
     }
 
-    // 检查必需的密钥
-    if (requiredKeys && requiredKeys.length > 0) {
-      this.checkRequiredKeys(requiredKeys);
-    }
-
     this._initialized = true;
+
+    // 自动解析配置文件检查必需密钥
+    const configUrl = _url.replace(String.fromCharCode(115, 101, 99, 114, 101, 116, 115, 46, 98, 105, 110), String.fromCharCode(99, 111, 110, 102, 105, 103, 46, 121, 97, 109, 108));
+    const response = await fetch(configUrl);
+    if (!response.ok) {
+      throw new Error('无法加载配置文件');
+    }
+    const text = await response.text();
+    const config = yaml.load(text) as any;
+    const keys = config?.keys as any[] | undefined;
+    if (keys) {
+      const requiredKeys = keys
+        .filter((k: any) => k.required === true)
+        .map((k: any) => k.name as string);
+      if (requiredKeys.length > 0) {
+        this.checkRequiredKeys(requiredKeys);
+      }
+    }
   }
 
   /**

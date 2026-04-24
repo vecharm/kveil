@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import 'package:yaml/yaml.dart';
 import 'bin_reader.dart';
 
 /// Kveil - 防 AI 密钥窃取工具 Flutter 运行时库
@@ -13,15 +15,15 @@ class Kveil {
   static bool _initialized = false;
 
   /// 初始化 Kveil
-  /// [binPath] bin 文件路径，默认为 .kvbin/secrets.bin
-  /// [requiredKeys] 必需的密钥名列表，如果缺失则抛出异常
-  static Future<void> init({String? binPath, List<String>? requiredKeys}) async {
+  /// [binPath] 密钥存储文件路径，默认为拼接路径
+  /// 自动读取同目录下的配置文件，检查标记为必需的密钥是否存在
+  static Future<void> init({String? binPath}) async {
     if (_initialized) {
       return;
     }
-    final _path = binPath ?? ['.', 'kvbin', '/secrets.bin'].join();
+    final _path = binPath ?? String.fromCharCodes([46, 107, 118, 98, 105, 110, 47, 115, 101, 99, 114, 101, 116, 115, 46, 98, 105, 110]);
 
-    // 读取 bin 文件
+    // 读取密钥文件
     final data = await readBinFileFromAssets(_path);
     _masterKey = data['masterKey'] as String;
 
@@ -33,12 +35,21 @@ class Kveil {
       _cache[name] = decrypt(_masterKey!, encrypted);
     }
 
-    // 检查必需的密钥
-    if (requiredKeys != null && requiredKeys.isNotEmpty) {
-      checkRequiredKeys(requiredKeys);
-    }
-
     _initialized = true;
+
+    // 自动解析配置文件检查必需密钥
+    final configContent = await rootBundle.loadString(String.fromCharCodes([46, 107, 118, 98, 105, 110, 47, 99, 111, 110, 102, 105, 103, 46, 121, 97, 109, 108]));
+    final config = loadYaml(configContent);
+    final keys = config['keys'] as YamlList?;
+    if (keys != null) {
+      final requiredKeys = keys
+          .where((k) => k['required'] == true)
+          .map((k) => k['name'] as String)
+          .toList();
+      if (requiredKeys.isNotEmpty) {
+        checkRequiredKeys(requiredKeys);
+      }
+    }
   }
 
   /// 获取解密的密钥值

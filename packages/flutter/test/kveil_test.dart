@@ -1,54 +1,75 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kveil/kveil.dart';
 import 'package:kveil/bin_reader.dart';
+import 'package:kveil/kveil.dart';
 
-// 创建测试用的 bin 文件数据
-Uint8List createTestBinData() {
-  final masterKey = 'TestMasterKey123';
+/// 创建测试用的 bin 文件数据
+Uint8List createMockBin(String masterKey, List<Map<String, String>> entries) {
+  final builder = BytesBuilder();
+  builder.add(xorEncode(masterKey));
+  builder.add(computeChecksum(masterKey));
   
-  // XOR 编码主密钥
-  final encodedKey = xorEncode(masterKey);
-  
-  // 计算校验值
-  final checksum = computeChecksum(masterKey);
-  
-  // 创建测试条目（使用真实加密）
-  final encrypted1 = 'HPDmK6RYZg01Nc1Y|Wavsketr9KP3T031bsya1A==|xje16ULc29bI1WRJGw==';
-  final encrypted2 = 'HPDmK6RYZg01Nc1Y|Wavsketr9KP3T031bsya1A==|xje16ULc29bI1WRJGw==';
-  
-  // 构建二进制数据
-  final buffer = BytesBuilder();
-  
-  // 添加头部
-  buffer.add(encodedKey);
-  buffer.add(checksum);
-  
-  // 添加条目 1
-  final name1 = 'key1'.codeUnits;
-  final enc1 = encrypted1.codeUnits;
-  buffer.addByte(0); // 名称长度高字节
-  buffer.addByte(name1.length); // 名称长度低字节
-  buffer.add(name1);
-  buffer.addByte(0); // 加密值长度高字节
-  buffer.addByte(enc1.length); // 加密值长度低字节
-  buffer.add(enc1);
-  
-  // 添加条目 2
-  final name2 = 'key2'.codeUnits;
-  final enc2 = encrypted2.codeUnits;
-  buffer.addByte(0);
-  buffer.addByte(name2.length);
-  buffer.add(name2);
-  buffer.addByte(0);
-  buffer.addByte(enc2.length);
-  buffer.add(enc2);
-  
-  return buffer.toBytes();
+  for (final entry in entries) {
+    final nameBytes = utf8.encode(entry['name']!);
+    final encBytes = utf8.encode(entry['encrypted']!);
+    
+    builder.addByte(0); // 名称长度高字节
+    builder.addByte(nameBytes.length); // 名称长度低字节
+    builder.add(nameBytes);
+    
+    builder.addByte(0); // 加密值长度高字节
+    builder.addByte(encBytes.length); // 加密值长度低字节
+    builder.add(encBytes);
+  }
+  return builder.toBytes();
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  
+  // 使用预生成的有效数据（与 CLI 测试一致）
+  const masterKey = 'y6AVRsjqmFCZIzOi';
+  const secretValue = 'test_value_123';
+  const encryptedValue = '/0a53hc9BxCM7Qth|StnSvICE1EC3n7IIP9hqpA==|QapJIcVyveR1X0k/QyQ=';
+  late Uint8List mockBinData;
+  
+  // YAML 配置：key1 是必需的，key2 不是
+  const mockYaml = '''
+keys:
+  - name: key1
+    required: true
+  - name: key2
+    required: false
+''';
+
+  setUpAll(() async {
+    mockBinData = createMockBin(masterKey, [
+      {'name': 'key1', 'encrypted': encryptedValue},
+      {'name': 'key2', 'encrypted': encryptedValue},
+    ]);
+
+    // Mock rootBundle 拦截资源加载
+    final binding = TestWidgetsFlutterBinding.instance;
+    binding.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (message) async {
+      if (message == null) return null;
+      final name = utf8.decode(message.buffer.asUint8List().where((b) => b != 0).toList());
+      
+      if (name.contains('secrets.bin')) {
+        return mockBinData.buffer.asByteData();
+      }
+      if (name.contains('config.yaml')) {
+        return Uint8List.fromList(utf8.encode(mockYaml)).buffer.asByteData();
+      }
+      return null;
+    });
+  });
+
+  tearDownAll(() {
+    TestWidgetsFlutterBinding.instance.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', null);
+  });
+
   group('Kveil 完整测试', () {
     setUp(() {
       Kveil.resetForTesting();
@@ -71,25 +92,21 @@ void main() {
     });
 
     test('init 应该正常加载并解密密钥', () async {
-      // Mock asset loading
-      final binding = TestWidgetsFlutterBinding.ensureInitialized();
-      final testBinData = createTestBinData();
+      await Kveil.init();
       
-      binding.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (message) async {
-        return Uint8List.fromList(testBinData).buffer.asByteData();
-      });
-      
-      // 由于 rootBundle.load 使用 'AssetManifest.json' 来查找 asset，
-      // 我们需要更复杂的 mock。这里我们直接测试 init 逻辑。
-      
-      // 实际项目中应该使用 mockito 或类似工具
-      // 这里我们跳过完整的 init 测试，因为 mock 太复杂
+      expect(Kveil.isInitialized(), isTrue);
+      expect(Kveil.get('key1'), equals(secretValue));
+      expect(Kveil.getKeys(), containsAll(['key1', 'key2']));
     });
 
-    test('get 密钥不存在应该抛出异常', () {
-      // 需要先 init
-      // 这里假设 init 已经成功
+    test('get 密钥不存在应该抛出异常', () async {
+      await Kveil.init();
       expect(() => Kveil.get('nonexistent'), throwsException);
+    });
+    
+    test('checkRequiredKeys 缺失密钥应该抛出异常', () async {
+      await Kveil.init();
+      expect(() => Kveil.checkRequiredKeys(['missing_key']), throwsException);
     });
   });
 }

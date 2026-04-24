@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc && node scripts/obfuscate.js",
+    "build": "tsc && node scripts/obfuscate.cjs",
     "test": "node test/web.test.js"
   },
   "keywords": [
@@ -25,7 +25,11 @@
   "peerDependencies": {
     "react": ">=16.8.0"
   },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "javascript-obfuscator": "^5.4.1",
     "typescript": "^6.0.2"
   }

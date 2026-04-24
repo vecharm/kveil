@@ -7,13 +7,8 @@ import 'package:flutter/services.dart';
 const List<int> XOR_MASK = [0x5A, 0x3C, 0x9F, 0x12, 0x7E, 0x4D, 0xB6, 0x81,
                             0x23, 0xF5, 0x67, 0xA9, 0xD4, 0x0E, 0x8C, 0x31];
 
-/// 从 assets 读取 bin 文件
-/// [binPath] bin 文件路径，相对于 assets 根目录
-/// 返回 { masterKey, entries }
-Future<Map<String, dynamic>> readBinFileFromAssets(String binPath) async {
-  final ByteData data = await rootBundle.load(binPath);
-  final Uint8List buffer = Uint8List.view(data.buffer);
-
+/// 解析二进制数据
+Map<String, dynamic> parseBinFile(Uint8List buffer) {
   const int xorEncodedHeaderSize = 16;
   const int checksumSize = 16;
   const int headerSize = xorEncodedHeaderSize + checksumSize;
@@ -75,6 +70,15 @@ Future<Map<String, dynamic>> readBinFileFromAssets(String binPath) async {
   }
 
   return {'masterKey': masterKey, 'entries': entries};
+}
+
+/// 从 assets 读取 bin 文件
+/// [binPath] bin 文件路径，相对于 assets 根目录
+/// 返回 { masterKey, entries }
+Future<Map<String, dynamic>> readBinFileFromAssets(String binPath) async {
+  final ByteData data = await rootBundle.load(binPath);
+  final Uint8List buffer = Uint8List.view(data.buffer);
+  return parseBinFile(buffer);
 }
 
 /// XOR 编码主密钥
