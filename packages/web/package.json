@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/obfuscate.js",
     "test": "node test/web.test.js"
   },
   "keywords": [
@@ -26,6 +26,7 @@
     "react": ">=16.8.0"
   },
   "devDependencies": {
+    "javascript-obfuscator": "^5.4.1",
     "typescript": "^6.0.2"
   }
 }
