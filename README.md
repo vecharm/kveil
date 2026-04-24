@@ -92,7 +92,7 @@ kveil show mi_api_key
 
 ```yaml
 dependencies:
-   kveil: ^0.2.0
+   kveil: ^0.3.0
 ```
 
 ### 2. 配置 assets

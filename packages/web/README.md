@@ -2,6 +2,15 @@
 
 Kveil Web/React 运行时库 - 防 AI 密钥窃取工具
 
+## ⚠️ 迁移指南 (v0.2.0 -> v0.3.0)
+
+**BREAKING CHANGE**: 默认配置目录已从 `.kveil` 重命名为 `.kvbin`。
+
+请手动重命名项目中的目录：
+```bash
+mv .kveil .kvbin
+```
+
 ## 安装
 
 ```bash

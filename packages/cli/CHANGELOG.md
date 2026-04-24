@@ -9,20 +9,16 @@
 - **Path Obfuscation**: Runtime libraries now use dynamic path construction.
 
 ### Features
-- Added comprehensive test suite (14 tests).
-- Compatible with kveil CLI v0.3.0.
-- No breaking changes in API.
+- Added `remove` command: Delete a key.
+- Added `reset` command: Update a key value.
+- Added `rekey` command: Rotate master key (with backup and confirmation).
+- Added JavaScript code obfuscation for CLI.
+- Added comprehensive test suite (27 tests).
 
 ## 0.2.0
-
-- Update documentation with new CLI commands (remove, reset, rekey)
-- Compatible with kveil CLI v0.2.0
-- No breaking changes in API
-
-## 0.1.0
 
 - Initial release
 - AES-256-GCM encrypted key storage
 - XOR encoded master key
 - MD5 checksum verification
-- Flutter runtime library for kveil CLI tool
+- Node.js CLI tool for kveil
